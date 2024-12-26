@@ -94,7 +94,7 @@ def get_artist_data():
         print("Error: ", e)
 
 artists = ["Linkin Park", "Nirvana", "Dua lipa", "Szpaku", "kaz blagane", "the weeknd", "skolim", "taco Hemingway",
-           "Modern talking", "Bambi", "Dżem", "Lady Pank", "Skillet", "Pitbull", "Florida", "Rihanna", "Britney Spears",
+           "Modern talking", "Bambi", "Dżem", "Lady Pank", "Skillet", "Pitbull", "Flo rida", "Rihanna", "Britney Spears",
            "The Police", "Lady Gaga", "Scooter", "Hollywood Undead", "Sean Paul"]
 token = get_auth_token()
 
