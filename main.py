@@ -5,7 +5,8 @@ import base64
 import json
 import pyodbc
 from datetime import datetime
-import pandas as pd
+import pandas as pd 
+import matplotlib.pyplot as plt
 
 load_dotenv()
 
@@ -89,15 +90,84 @@ def get_artist_data():
         SELECT * FROM artists_stats
         """
         df = pd.read_sql_query(query, conn)
-        print(df)     
+        print(df)
+        return df     
     except Exception as e:
         print("Error: ", e)
+        
+# Funkcja do filtrowania danych dla wybranego artysty
+def plot_artist(df, artist_name):
+    # Filtruj dane dla danego artysty
+    artist_data = df[df['artist_name'].str.lower() == artist_name.lower()]
+    
+    # Upewnij się, że dane są posortowane po dacie
+    artist_data = artist_data.sort_values(by="record_date")
+    
+    fig, axs = plt.subplots(1, 2, figsize=(16, 6))
+    
+     # Wykres 1: Liczba obserwujących
+    axs[0].plot(artist_data['record_date'], artist_data['followers'], marker='o', label="Obserwujący")
+    axs[0].set_title(f"Zmiana liczby obserwujących: {artist_name}", fontsize=14)
+    axs[0].set_xlabel("Data", fontsize=12)
+    axs[0].set_ylabel("Liczba obserwujących", fontsize=12)
+    axs[0].grid(alpha=0.5)
+    axs[0].legend()
 
+    # Wykres 2: Popularność
+    axs[1].plot(artist_data['record_date'], artist_data['popularity'], marker='o', color='orange', label="Popularność")
+    axs[1].set_title(f"Zmiana popularności: {artist_name}", fontsize=14)
+    axs[1].set_xlabel("Data", fontsize=12)
+    axs[1].set_ylabel("Popularność", fontsize=12)
+    axs[1].grid(alpha=0.5)
+    axs[1].legend()
+
+    # Wyświetlenie wykresów
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_all_artists(df):
+    # Pobierz unikalne nazwy artystów
+    unique_artists = df['artist_name'].unique()
+    
+    for artist_name in unique_artists:
+        # Filtruj dane dla danego artysty
+        artist_data = df[df['artist_name'].str.lower() == artist_name.lower()]
+        
+        # Upewnij się, że dane są posortowane po dacie
+        artist_data = artist_data.sort_values(by="record_date")
+        
+        # Tworzenie dwóch wykresów obok siebie
+        fig, axs = plt.subplots(1, 2, figsize=(16, 6))
+        
+        # Wykres 1: Liczba obserwujących
+        axs[0].plot(artist_data['record_date'], artist_data['followers'], marker='o', label="Obserwujący")
+        axs[0].set_title(f"Zmiana liczby obserwujących: {artist_name}", fontsize=14)
+        axs[0].set_xlabel("Data", fontsize=12)
+        axs[0].set_ylabel("Liczba obserwujących", fontsize=12)
+        axs[0].grid(alpha=0.5)
+        axs[0].legend()
+
+        # Wykres 2: Popularność
+        axs[1].plot(artist_data['record_date'], artist_data['popularity'], marker='o', color='orange', label="Popularność")
+        axs[1].set_title(f"Zmiana popularności: {artist_name}", fontsize=14)
+        axs[1].set_xlabel("Data", fontsize=12)
+        axs[1].set_ylabel("Popularność", fontsize=12)
+        axs[1].grid(alpha=0.5)
+        axs[1].legend()
+
+        # Wyświetlenie wykresów
+        plt.tight_layout()
+        plt.show()
+        
+        
 artists = ["Linkin Park", "Nirvana", "Dua lipa", "Szpaku", "kaz blagane", "the weeknd", "skolim", "taco Hemingway",
            "Modern talking", "Bambi", "Dżem", "Lady Pank", "Skillet", "Pitbull", "Flo rida", "Rihanna", "Britney Spears",
            "The Police", "Lady Gaga", "Scooter", "Hollywood Undead", "Sean Paul"]
 token = get_auth_token()
 
-save_artist_data(token, artists)
-get_artist_data()
+#save_artist_data(token, artists)
+df = get_artist_data()
+#plot_artist(df, "Linkin Park")
+plot_all_artists(df)
 conn.close()
